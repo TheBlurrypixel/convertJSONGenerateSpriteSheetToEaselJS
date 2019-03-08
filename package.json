@@ -17,7 +17,9 @@
     "url": "https://github.com/TheBlurrypixel/convertJSONGenerateSpriteSheetToEaselJS/issues"
   },
   "homepage": "https://github.com/TheBlurrypixel/convertJSONGenerateSpriteSheetToEaselJS#readme",
-  "dependencies": {},
+  "dependencies": {
+    "jsdom": "^13.2.0"
+  },
   "devDependencies": {
     "electron": "^4.0.8"
   }
