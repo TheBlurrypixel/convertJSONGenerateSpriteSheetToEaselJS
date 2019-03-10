@@ -1,0 +1,35 @@
+﻿{"frames": {
+
+"leftHand":
+{
+	"frame": {"x":0,"y":0,"w":121,"h":191},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":121,"h":191},
+	"sourceSize": {"w":121,"h":191}
+},
+"marioBody":
+{
+	"frame": {"x":121,"y":0,"w":227,"h":335},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":227,"h":335},
+	"sourceSize": {"w":227,"h":335}
+},
+"rightHand":
+{
+	"frame": {"x":348,"y":0,"w":92,"h":86},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":92,"h":86},
+	"sourceSize": {"w":92,"h":86}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "19.1.0.349",
+	"image": "mario.png",
+	"format": "RGBA8888",
+	"size": {"w":1024,"h":1024},
+	"scale": "1"
+}
+}
