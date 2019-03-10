@@ -59,6 +59,36 @@ function removeSpaces(inString) {
 	return result;
 }
 
+function processDefsText(inText) {
+	var defsArray = new Array();
+	var openBracketIndex = 0;
+	var closeBracketIndex = -1;
+	closeBracketIndex = findEndingBrace(inText, openBracketIndex, "()");
+	if(closeBracketIndex > -1) {
+		// find the end of the definition
+		// find the following ;newline
+		var newlineIndex = inText.indexOf('\n');
+
+		// determine if we have a Bitmap or a Sprite
+		// previouse newline
+		var previousNewLineIndex = inText.substring(0, newlineIndex).lastIndexOf('\n');
+		var bitmapOrSpriteSnippet = inText.substring(previousNewLineIndex, newlineIndex);
+		// search for Bitmap or Sprite
+		if(bitmapOrSpriteSnippet.search('new cjs.Bitmap') > -1) {
+			// we have a bitmap get the end of the def
+			var nextNewLineIndex = inText.indexOf('\n', newlineIndex+1);
+			if(nextNewLineIndex > -1) {
+				if(inText.substring(newlineIndex+1, nextNewLineIndex).search('p\.nominalBounds') > -1) {
+					var symbolDefSnippet = inText.substring(openBracketIndex, nextNewLineIndex);
+				}
+			}
+		}
+		else if(bitmapOrSpriteSnippet.search('new cjs.Sprite') > -1 {
+
+		}
+	}
+}
+
 function processJSON(inFiles, inIndexFiles) {
   if( ((inFiles) && (inFiles.length > 0)) && ((inIndexFiles) && (inIndexFiles.length > 0)) ) {
     var isWin = process.platform === "win32";
@@ -120,37 +150,43 @@ function processJSON(inFiles, inIndexFiles) {
       var startOfLibMeta = scriptText.search(/\blib.ssMetadata =/);
       var endOfLibMeta = scriptText.indexOf(";", startOfLibMeta);
       var libsmetaDataStatement = scriptText.substring(startOfLibMeta, endOfLibMeta+1);
+
       // find the right hand side Array
       var openBrackIndex = libsmetaDataStatement.indexOf('[');
-			// var arrayString = statement.substring(openBrackIndex, endOfLibMeta - 1);
-			var closeBrackIndex = findEndingBrace(libsmetaDataStatement, 0, "[]");
-			var arrayString = libsmetaDataStatement.substring(openBrackIndex, closeBrackIndex+1);
 
-			// console.log("arrayString: " + arrayString);
+			var closeBrackIndex = findEndingBrace(libsmetaDataStatement, openBrackIndex, "[]");
+			if(closeBrackIndex > -1) {
+				var arrayString = libsmetaDataStatement.substring(openBrackIndex, closeBrackIndex+1);
 
-      var libssMetadataArray = eval(arrayString);
-      libssMetadataArray.push(...outSSMetaDataObjArray);
-
-			// for each new symbolDef find the old and replace it
-			for(var i=0; i<outSSMetaDataObjArray.length; i++) {
-				for(var j=0; j<outSSMetaDataObjArray[i].frames.length; j++) {
-					var name = inSSMetaDataObjArray[i][j].name;
-					// search for corresponding old symbolDef
-					var regexString = "\\(lib." + name + " = function\\(\\) {";
-					// console.log(regexString);
-					var startSymStatementIndex = scriptText.search(new RegExp(regexString));
-					if(startSymStatementIndex > -1) {
-						var symbolCloseIndex = findEndingBrace(scriptText, startSymStatementIndex, "()");
-						if(symbolCloseIndex > -1) {
-							// found the closing parens now find the end of the statement
-							var endSymStatementIndex = scriptText.indexOf(";", symbolCloseIndex);
-							scriptText = scriptText.substring(0,startSymStatementIndex) + inSSMetaDataObjArray[i][j].symbolDef + scriptText.substring(endSymStatementIndex+1);
-						}
-					}
-				}
+	      var libssMetadataArray = eval(arrayString);
+	      libssMetadataArray.push(...outSSMetaDataObjArray);
 			}
 
-			console.log(scriptText);
+			// find the beginning of symbol outSymbolDefs
+			var beginIndex = scriptText.indexOf('(');
+			var endIndex = scriptText.indexOf('function mc_symbol_clone()');
+			var symDefsText = scriptText.substring(beginIndex, endIndex);
+			console.log(symDefsText);
+
+			// for each new symbolDef find the old and replace it
+			// for(var i=0; i<outSSMetaDataObjArray.length; i++) {
+			// 	for(var j=0; j<outSSMetaDataObjArray[i].frames.length; j++) {
+			// 		var name = inSSMetaDataObjArray[i][j].name;
+			// 		// search for corresponding old symbolDef
+			// 		var regexString = "\\(lib." + name + " = function\\(\\) {";
+			//
+			// 		var startSymStatementIndex = scriptText.search(new RegExp(regexString));
+			// 		if(startSymStatementIndex > -1) {
+			// 			var symbolCloseIndex = findEndingBrace(scriptText, startSymStatementIndex, "()");
+			// 			if(symbolCloseIndex > -1) {
+			// 				// found the closing parens now find the end of the statement
+			// 				var endSymStatementIndex = scriptText.indexOf(";", symbolCloseIndex);
+			// 				scriptText = scriptText.substring(0,startSymStatementIndex) + inSSMetaDataObjArray[i][j].symbolDef + scriptText.substring(endSymStatementIndex+1);
+			// 			}
+			// 		}
+			// 	}
+			// }
+			// console.log(scriptText);
 
 			// console.log("new libssMetaData: \n" + libssMetadataArray + "\n");
 			// console.log("symbol defs: \n" + outSymbolDefs + "\n");

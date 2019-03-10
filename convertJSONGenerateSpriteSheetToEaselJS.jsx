@@ -47,10 +47,10 @@ function main()
 	var baseName = scriptFile.name;
 	baseName = baseName.lastIndexOf(".") > 0 ? baseName.substring(0,baseName.lastIndexOf(".")) : baseName;
 
-	scriptFile.open('r');  
-	var content = scriptFile.read();  
+	scriptFile.open('r');
+	var content = scriptFile.read();
 	scriptFile.close();
-	
+
 	var obj = JSON.parse(content);
 
 	// get number of properties
@@ -76,12 +76,12 @@ function main()
 		outSSMetaData += "[" + frameRectArray[i][0] + "," + frameRectArray[i][1] + "," + frameRectArray[i][2] + "," + frameRectArray[i][3] + "]" + (i < frameRectArray.length-1 ? "," : "");
 	outSSMetaData += "]}";
 	print(outSSMetaData + "\n\n");
-	
+
 	var outSymbolDefs = "";
 	for(var i = 0; i < frameArray.length; i++)
 		outSymbolDefs += "(lib." + frameArray[i] + " = function() {\nthis.spriteSheet = ss[\"" + baseName + "\"];\nthis.gotoAndStop(" + i + ");\n}).prototype = p = new cjs.Sprite();\n\n";
 	print(outSymbolDefs + "\n\n");
-		
+
 	return "Success!";
 }
 
