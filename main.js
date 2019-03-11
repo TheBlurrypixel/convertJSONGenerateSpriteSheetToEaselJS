@@ -60,33 +60,76 @@ function removeSpaces(inString) {
 }
 
 function processDefsText(inText) {
-	var defsArray = new Array();
+	var defsObj = {};
+
 	var openBracketIndex = 0;
 	var closeBracketIndex = -1;
-	closeBracketIndex = findEndingBrace(inText, openBracketIndex, "()");
-	if(closeBracketIndex > -1) {
-		// find the end of the definition
-		// find the following ;newline
-		var newlineIndex = inText.indexOf('\n');
+	while(openBracketIndex < inText.length) {
+		closeBracketIndex = findEndingBrace(inText, openBracketIndex, "()");
 
-		// determine if we have a Bitmap or a Sprite
-		// previouse newline
-		var previousNewLineIndex = inText.substring(0, newlineIndex).lastIndexOf('\n');
-		var bitmapOrSpriteSnippet = inText.substring(previousNewLineIndex, newlineIndex);
-		// search for Bitmap or Sprite
-		if(bitmapOrSpriteSnippet.search('new cjs.Bitmap') > -1) {
-			// we have a bitmap get the end of the def
-			var nextNewLineIndex = inText.indexOf('\n', newlineIndex+1);
-			if(nextNewLineIndex > -1) {
-				if(inText.substring(newlineIndex+1, nextNewLineIndex).search('p\.nominalBounds') > -1) {
-					var symbolDefSnippet = inText.substring(openBracketIndex, nextNewLineIndex);
+		if(closeBracketIndex > -1) {
+			// find the end of the definition
+			// find the following ;newline
+			var newlineIndex = inText.indexOf('\n', closeBracketIndex);
+
+			if(newlineIndex > -1) {
+				// determine if we have a Bitmap or a Sprite
+				// previouse newline
+				var previousNewLineIndex = inText.substring(openBracketIndex, newlineIndex).lastIndexOf('\n');
+				var bitmapOrSpriteSnippet = inText.substring(previousNewLineIndex, newlineIndex);
+
+				// search for Bitmap or Sprite
+				if(bitmapOrSpriteSnippet.search(/\bnew cjs\.Bitmap\b/) > -1) {
+					// we have a bitmap get the end of the def
+					var nextNewLineIndex = inText.indexOf('\n', newlineIndex+1);
+					if(nextNewLineIndex > -1) {
+						if(inText.substring(newlineIndex+1, nextNewLineIndex).search('p\.nominalBounds') > -1) {
+							// console.log("We have a Bitmap");
+							var resObj = { type: "Bitmap", def: inText.substring(openBracketIndex, nextNewLineIndex) };
+
+							defsObj[resObj.def.match(/(?:\(lib\.)(\w+)\b/)[1]] = resObj;
+							// defsArray.push(resObj);
+							openBracketIndex = inText.indexOf('(', nextNewLineIndex+1);
+						}
+					}
+				}
+				else if(bitmapOrSpriteSnippet.search(/\bnew cjs\.Sprite\b/) > -1) {
+					// we have a sprite. find the next newlineIndex
+					// console.log("We have a sprite");
+					var resObj = { type: "Sprite", def: inText.substring(openBracketIndex, newlineIndex) };
+//					resObj.name = resObj.def.match(/(?:\(lib\.)(\w+)\b/)[1];
+					resObj.spriteSheet = resObj.def.match(/(?:initialize\(ss\[\")(.+)(\"\])/)[1];
+
+					var stopFrameIndex = resObj.def.search(/\bthis\.gotoAndStop\b/);
+					if(stopFrameIndex > -1) {
+						var stopFrameStartIndex = resObj.def.indexOf('(', stopFrameIndex);
+						var stopFrameEndIndex = findEndingBrace(resObj.def, stopFrameStartIndex, "()");
+						if(stopFrameEndIndex > -1) {
+							var frame = parseInt(resObj.def.substring(stopFrameStartIndex+1, stopFrameEndIndex));
+							resObj.frame = frame;
+							defsObj[resObj.def.match(/(?:\(lib\.)(\w+)\b/)[1]] = resObj;
+							// defsArray.push(resObj);
+							openBracketIndex = inText.indexOf('(', newlineIndex+1);
+						}
+					}
+				}
+				else {
+					openBracketIndex = inText.indexOf('(', newlineIndex+1);
 				}
 			}
+			else {
+				break;
+			}
 		}
-		else if(bitmapOrSpriteSnippet.search('new cjs.Sprite') > -1 {
+		else {
+			break;
+		}
 
-		}
+		if(openBracketIndex < 0)
+			break;
 	}
+
+	return defsObj;
 }
 
 function processJSON(inFiles, inIndexFiles) {
@@ -163,30 +206,63 @@ function processJSON(inFiles, inIndexFiles) {
 			}
 
 			// find the beginning of symbol outSymbolDefs
-			var beginIndex = scriptText.indexOf('(');
+			var beginIndex = scriptText.indexOf('(', closeBrackIndex+1);
 			var endIndex = scriptText.indexOf('function mc_symbol_clone()');
 			var symDefsText = scriptText.substring(beginIndex, endIndex);
-			console.log(symDefsText);
+			// console.log(symDefsText);
 
+			// defs is an object where each property is one of the lib clip names
+			var defs = processDefsText(symDefsText);
+
+			// now we have an array of the original definitions
+			// we can search it
+			// find all the spritesheets used and count how many times each is used
+			var usedSSObj = {};
+			var defsKeys = Object.keys(defs);
+			defsKeys.forEach( (ky) =>{
+				if(usedSSObj.hasOwnProperty( defs[ky].spriteSheet )) {
+					usedSSObj[defs[ky].spriteSheet]++;
+				}
+				else {
+					usedSSObj[defs[ky].spriteSheet] = 1;
+				}
+			});
+
+			var removeFromManifestArray = new Array();
 			// for each new symbolDef find the old and replace it
-			// for(var i=0; i<outSSMetaDataObjArray.length; i++) {
-			// 	for(var j=0; j<outSSMetaDataObjArray[i].frames.length; j++) {
-			// 		var name = inSSMetaDataObjArray[i][j].name;
-			// 		// search for corresponding old symbolDef
-			// 		var regexString = "\\(lib." + name + " = function\\(\\) {";
-			//
-			// 		var startSymStatementIndex = scriptText.search(new RegExp(regexString));
-			// 		if(startSymStatementIndex > -1) {
-			// 			var symbolCloseIndex = findEndingBrace(scriptText, startSymStatementIndex, "()");
-			// 			if(symbolCloseIndex > -1) {
-			// 				// found the closing parens now find the end of the statement
-			// 				var endSymStatementIndex = scriptText.indexOf(";", symbolCloseIndex);
-			// 				scriptText = scriptText.substring(0,startSymStatementIndex) + inSSMetaDataObjArray[i][j].symbolDef + scriptText.substring(endSymStatementIndex+1);
-			// 			}
-			// 		}
-			// 	}
-			// }
-			// console.log(scriptText);
+			for(var i=0; i<outSSMetaDataObjArray.length; i++) {
+				for(var j=0; j<outSSMetaDataObjArray[i].frames.length; j++) {
+					var name = inSSMetaDataObjArray[i][j].name;
+
+					// find this name in the defs Obj
+					if(defs.hasOwnProperty(name)) {
+						var usedSS = defs[name].spriteSheet;
+						defs[name].def = inSSMetaDataObjArray[i][j].symbolDef;
+						defs[name].spriteSheet = outSSMetaDataObjArray[i].name;
+
+						if(usedSSObj.hasOwnProperty(usedSS)) {
+							usedSSObj[usedSS]--;
+							if(usedSSObj[usedSS] < 1)
+								removeFromManifestArray.push(usedSS);
+						}
+					}
+				}
+			}
+			// Now we should had updated the defs array to be up to date
+			// And we have an array of items to remove from the manifest
+			// write out a new ssMetaData and new symbol defs
+			var accumString = libssMetadataArray.reduce( (total, current, currentIndex) => {
+				return ( ((currentIndex > 0) ? total + ",\n" : "") + "\t{ name:\"" + current.name + "\", frames: [" + current.frames.reduce( (framesTotal, framesCurrent, framesCurrentIndex) => {
+					return ( ((framesCurrentIndex > 0) ? framesTotal + "," : "") + "[" + framesCurrent[0] + "," + framesCurrent[1] + "," + framesCurrent[2] + "," + framesCurrent[3] + "]" );
+				}, "") + "]}" );
+			}, "");
+			var newLibSSMetadataString = "lib.ssMetadata = [\n" + accumString + "\n];\n"
+
+			var newScriptText = (scriptText.substring(0, startOfLibMeta) +
+				+ newLibSSMetadataString
+				+ scriptText.substring(endOfLibMeta+1)
+			);
+			console.log(newLibSSMetadataString);
 
 			// console.log("new libssMetaData: \n" + libssMetadataArray + "\n");
 			// console.log("symbol defs: \n" + outSymbolDefs + "\n");
