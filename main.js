@@ -258,11 +258,11 @@ function processJSON(inFiles, inIndexFiles) {
 			}, "");
 			var newLibSSMetadataString = "lib.ssMetadata = [\n" + accumString + "\n];\n"
 
-			var newScriptText = (scriptText.substring(0, startOfLibMeta) +
+			var newScriptText = (scriptText.substring(0, startOfLibMeta)
 				+ newLibSSMetadataString
 				+ scriptText.substring(endOfLibMeta+1)
 			);
-			console.log(newLibSSMetadataString);
+			console.log(newScriptText);
 
 			// console.log("new libssMetaData: \n" + libssMetadataArray + "\n");
 			// console.log("symbol defs: \n" + outSymbolDefs + "\n");
