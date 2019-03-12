@@ -1,5 +1,5 @@
 {
-  "name": "convertjsongeneratespritesheettoeaseljs",
+  "name": "convertjsonspritesheettoeaseljs",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheBlurrypixel/convertJSONGenerateSpriteSheetToEaselJS.git"
+    "url": "git+https://github.com/TheBlurrypixel/convertJSONSpriteSheetToEaselJS.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/TheBlurrypixel/convertJSONGenerateSpriteSheetToEaselJS/issues"
+    "url": "https://github.com/TheBlurrypixel/convertJSONSpriteSheetToEaselJS/issues"
   },
-  "homepage": "https://github.com/TheBlurrypixel/convertJSONGenerateSpriteSheetToEaselJS#readme",
+  "homepage": "https://github.com/TheBlurrypixel/convertJSONSpriteSheetToEaselJS#readme",
   "dependencies": {
     "electron-packager": "^13.1.1",
     "jsdom": "^13.2.0"
