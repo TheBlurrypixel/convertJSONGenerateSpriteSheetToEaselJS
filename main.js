@@ -158,8 +158,8 @@ function processJSON(inFiles, inIndexFiles) {
 	  	var frameRectArray = [];
 			var newSymbolsArray = [];
 			var tempObj = { name: baseName, frames: new Array() }
+			var frameIndex = 0;
 	  	for (var key in testObj) {
-				var frameIndex = 0;
 	  		if (testObj.hasOwnProperty(key)) {
 					tempObj.frames.push([testObj[key].frame.x, testObj[key].frame.y, testObj[key].frame.w, testObj[key].frame.h]);
 					var symbolDef = "(lib." + key + " = function() {\n\tthis.initialize(ss[\"" + baseName + "\"]);\n\tthis.gotoAndStop(" + frameIndex + ");\n}).prototype = p = new cjs.Sprite();";
