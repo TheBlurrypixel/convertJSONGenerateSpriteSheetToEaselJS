@@ -16,7 +16,7 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":227,"h":335},
 	"sourceSize": {"w":227,"h":335}
 },
-"rightHan.pngd":
+"rightHand.png":
 {
 	"frame": {"x":227,"y":191,"w":92,"h":86},
 	"rotated": false,

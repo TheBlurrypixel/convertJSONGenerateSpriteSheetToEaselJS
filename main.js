@@ -164,8 +164,19 @@ function processJSON(inFiles, inIndexFiles) {
 					// find if key has period in it
 					var keyName = key;
 					var periodIndex = keyName.indexOf('.');
-					if(periodIndex > -1)
-						keyName = (key.substring(periodIndex+1, key.length).length == 3) ? key.substring(0, periodIndex) : key.replace(/([^\w-]+)/g, '');
+					if(periodIndex > -1) {
+						var testExt = key.substring(periodIndex+1, key.length);
+						if(	(testExt == 'jpg') ||
+								(testExt == 'jpeg') ||
+								(testExt == 'png') ||
+								(testExt == 'gif') ||
+								(testExt == 'bmp') ) {
+							keyName = key.substring(0, periodIndex);
+						}
+						else {
+							keyName = key.replace(/([^\w-]+)/g, '');
+						}
+					}
 
 					tempObj.frames.push([testObj[key].frame.x, testObj[key].frame.y, testObj[key].frame.w, testObj[key].frame.h]);
 					var symbolDef = "(lib." + keyName + " = function() {\n\tthis.initialize(ss[\"" + baseName + "\"]);\n\tthis.gotoAndStop(" + frameIndex + ");\n}).prototype = p = new cjs.Sprite();";
