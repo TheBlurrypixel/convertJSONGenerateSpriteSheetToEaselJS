@@ -1,24 +1,24 @@
 ﻿{"frames": {
 
-"leftHand":
+"leftHand.png":
 {
-	"frame": {"x":0,"y":0,"w":121,"h":191},
+	"frame": {"x":227,"y":0,"w":121,"h":191},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":121,"h":191},
 	"sourceSize": {"w":121,"h":191}
 },
-"marioBody":
+"marioBody.png":
 {
-	"frame": {"x":121,"y":0,"w":227,"h":335},
+	"frame": {"x":0,"y":0,"w":227,"h":335},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":227,"h":335},
 	"sourceSize": {"w":227,"h":335}
 },
-"rightHand":
+"rightHan.pngd":
 {
-	"frame": {"x":348,"y":0,"w":92,"h":86},
+	"frame": {"x":227,"y":191,"w":92,"h":86},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":92,"h":86},
